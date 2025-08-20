@@ -3,9 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CLI — Test</title>
+  <title>CLI Test</title>
 
-  <!-- xterm CSS (jsDelivr = correct packaging) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.5.0/css/xterm.css">
   <style>
     html, body, #terminal { margin:0; height:100%; background:#000; }
@@ -15,29 +14,27 @@
 <body>
   <div id="terminal"></div>
 
-  <!-- xterm core, then fit addon (matching versions) -->
   <script src="https://cdn.jsdelivr.net/npm/xterm@5.5.0/lib/xterm.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.10.0/lib/xterm-addon-fit.js"></script>
-
   <script>
-    // Minimal sanity check
-    const term = new Terminal({
-      cursorBlink: true,
-      theme: {
-        background: '#000000',
-        foreground: '#F5F0E6',
-        cursor: '#00694E'
-      }
-    });
-    const fitAddon = new FitAddon.FitAddon();
-    term.loadAddon(fitAddon);
+    const term = new Terminal({ cursorBlink: true, theme:{foreground:'#ddd'} });
+    const fit = new FitAddon.FitAddon();
+    term.loadAddon(fit);
     term.open(document.getElementById('terminal'));
-    fitAddon.fit();
+    fit.fit();
     term.focus();
 
-    term.writeln('CLI test');
-    term.writeln('If you can read this, xterm loaded correctly.');
+    term.writeln('CLI Test Environment');
     term.write('\r\n$ ');
+
+    // Echo input so you can verify typing works
+    let buf = '';
+    term.onData(d => {
+      if (d === '\r') { term.writeln(''); term.writeln('you typed: ' + buf); buf=''; term.write('\r\n$ '); return; }
+      if (d === '\u007F') { if (buf.length){ term.write('\b \b'); buf = buf.slice(0,-1);} return; }
+      const c = d.charCodeAt(0);
+      if (c >= 32 && c <= 126) { buf += d; term.write(d); }
+    });
   </script>
 </body>
 </html>
