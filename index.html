@@ -3,18 +3,41 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ashcroft Advisory — CLI</title>
+  <title>CLI — Test</title>
 
-  <!-- xterm.css -->
+  <!-- xterm CSS (jsDelivr = correct packaging) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.5.0/css/xterm.css">
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    html, body, #terminal { margin:0; height:100%; background:#000; }
+    #terminal { outline: none; }
+  </style>
 </head>
 <body>
   <div id="terminal"></div>
 
-  <!-- xterm core + fit addon (correct versions/paths) -->
+  <!-- xterm core, then fit addon (matching versions) -->
   <script src="https://cdn.jsdelivr.net/npm/xterm@5.5.0/lib/xterm.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.10.0/lib/xterm-addon-fit.js"></script>
-  <script src="script.js"></script>
+
+  <script>
+    // Minimal sanity check
+    const term = new Terminal({
+      cursorBlink: true,
+      theme: {
+        background: '#000000',
+        foreground: '#F5F0E6',
+        cursor: '#00694E'
+      }
+    });
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
+    term.open(document.getElementById('terminal'));
+    fitAddon.fit();
+    term.focus();
+
+    term.writeln('CLI test');
+    term.writeln('If you can read this, xterm loaded correctly.');
+    term.write('\r\n$ ');
+  </script>
 </body>
 </html>
