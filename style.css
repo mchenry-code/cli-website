@@ -3,5 +3,6 @@ html, body, #terminal {
   padding: 0;
   height: 100%;
   width: 100%;
-  background: black;
+  background: #000;
 }
+#terminal { outline: none; } /* avoid focus ring; xterm handles focus */
