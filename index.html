@@ -5,45 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CLI Test</title>
 
-  <!-- xterm from cdnjs (global Terminal) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/5.5.0/xterm.min.css">
+  <!-- xterm CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.5.0/css/xterm.css">
   <style>
     html, body, #terminal { margin:0; height:100%; background:#000; }
-    #terminal { outline:none; }
+    #terminal { outline: none; }
   </style>
 </head>
 <body>
   <div id="terminal"></div>
 
-  <!-- Load xterm BEFORE any code that uses Terminal -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/5.5.0/xterm.min.js"></script>
-  <!-- Fit addon for full-viewport sizing -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/5.5.0/addons/fit/fit.min.js"></script>
+  <!-- Load xterm core, then the fit addon (matching versions) -->
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.5.0/lib/xterm.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.10.0/lib/xterm-addon-fit.js"></script>
 
   <script>
-    // Wait until scripts are parsed (DOMContentLoaded) to be extra safe
-    window.addEventListener('DOMContentLoaded', () => {
-      const term = new Terminal({ cursorBlink: true, theme:{foreground:'#ddd'} });
-      const fit = new (window.fit || window.FitAddon || {}).FitAddon?.() || null;
-      if (fit) term.loadAddon(fit);
+    // Minimal, robust init (no optional chaining)
+    const term = new Terminal({ cursorBlink: true, theme: { foreground: '#dddddd' } });
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
 
-      term.open(document.getElementById('terminal'));
-      fit && fit.fit();
-      term.focus();
+    const el = document.getElementById('terminal');
+    term.open(el);
+    fitAddon.fit();
+    term.focus();
 
-      term.writeln('CLI Test Environment');
-      term.write('\r\n$ ');
+    term.writeln('CLI Test Environment');
+    term.write('\r\n$ ');
 
-      let buf = '';
-      term.onData(d => {
-        if (d === '\r') { term.writeln(''); term.writeln('you typed: ' + buf); buf=''; term.write('\r\n$ '); return; }
-        if (d === '\u007F') { if (buf.length){ term.write('\b \b'); buf = buf.slice(0,-1);} return; }
-        const c = d.charCodeAt(0);
-        if (c >= 32 && c <= 126) { buf += d; term.write(d); }
-      });
-
-      window.addEventListener('resize', () => fit && fit.fit());
+    // Echo input so you can verify typing works
+    let buf = '';
+    term.onData(d => {
+      if (d === '\r') { term.writeln(''); term.writeln('you typed: ' + buf); buf=''; term.write('\r\n$ '); return; }
+      if (d === '\u007F') { if (buf.length){ term.write('\b \b'); buf = buf.slice(0,-1);} return; }
+      const c = d.charCodeAt(0);
+      if (c >= 32 && c <= 126) { buf += d; term.write(d); }
     });
+
+    window.addEventListener('resize', () => fitAddon.fit());
   </script>
 </body>
 </html>
